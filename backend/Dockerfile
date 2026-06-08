@@ -14,8 +14,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
 
-# Copy dependency manifests first (for better layer caching)
-COPY pyproject.toml uv.lock ./
+# Copy dependency manifests first (for better layer caching).
+# NOTE: Source paths are relative to the repo root (Railway build context).
+COPY backend/pyproject.toml backend/uv.lock ./
 
 # Install dependencies into a project-local virtual env (.venv)
 # --frozen: respect uv.lock, no updates
@@ -33,10 +34,11 @@ WORKDIR /app
 # Copy the virtual environment from builder
 COPY --from=builder /app/.venv /app/.venv
 
-# Copy application source
-COPY app/ ./app/
-COPY alembic/ ./alembic/
-COPY alembic.ini ./
+# Copy application source.
+# NOTE: Source paths are relative to the repo root (Railway build context).
+COPY backend/app/ ./app/
+COPY backend/alembic/ ./alembic/
+COPY backend/alembic.ini ./
 
 # Make the venv's Python the default for this container
 ENV PATH="/app/.venv/bin:$PATH" \
