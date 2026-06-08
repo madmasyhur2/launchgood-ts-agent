@@ -41,6 +41,16 @@ class Settings(BaseSettings):
         "postgresql+asyncpg://launchgood:launchgood_secret@localhost:5432/launchgood_ts"
     )
 
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def normalize_database_url(cls, v: str) -> str:
+        """Normalize Railway's postgresql:// to postgresql+asyncpg:// for asyncpg driver."""
+        if v.startswith("postgresql://"):
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        if v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql+asyncpg://", 1)
+        return v
+
     # -------------------------------------------------------------------------
     # Redis
     # -------------------------------------------------------------------------
