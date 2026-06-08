@@ -1,9 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Required for Docker multi-stage builds — produces a self-contained
-  // server.js bundle in .next/standalone that doesn't need node_modules.
-  output: "standalone",
+  // NOTE: `output: "standalone"` is only needed for Docker/self-hosted builds.
+  // It is intentionally disabled here for Vercel compatibility.
+  // Re-enable it if deploying via Docker Compose or Railway with Dockerfile.
 };
 
 export default nextConfig;
