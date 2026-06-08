@@ -7,7 +7,7 @@
 ## 🔗 Live Demo
 
 - **Frontend:** [https://launchgood-ts-agent.vercel.app](https://launchgood-ts-agent.vercel.app)
-- **API Docs (Swagger):** [https://launchgood-ts-agent.up.railway.app/docs](https://launchgood-ts-agent.up.railway.app/docs)
+- **API Docs (Swagger):** [https://appealing-embrace-production-4999.up.railway.app/docs](https://appealing-embrace-production-4999.up.railway.app/docs)
 
 ---
 
