@@ -28,19 +28,19 @@ An AI agent (built with LangGraph + Google Gemini) automatically analyzes each c
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        FRONTEND (Next.js)                       │
-│  ┌─────────────────┐  ┌──────────────────┐  ┌───────────────┐  │
-│  │  Campaign Queue  │  │  Review Dashboard │  │  Analytics &  │  │
-│  │  (Inbox View)   │  │  (Detail View)    │  │  Eval Panel   │  │
-│  └────────┬────────┘  └────────┬─────────┘  └───────┬───────┘  │
-└───────────┼────────────────────┼────────────────────┼──────────┘
+│  ┌─────────────────┐  ┌──────────────────┐  ┌───────────────┐   │
+│  │  Campaign Queue │  │ Review Dashboard │  │  Analytics &  │   │
+│  │  (Inbox View)   │  │  (Detail View)   │  │  Eval Panel   │   │
+│  └────────┬────────┘  └────────┬─────────┘  └───────┬───────┘   │
+└───────────┼────────────────────┼────────────────────┼───────────┘
             │                    │                     │
             ▼                    ▼                     ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                       BACKEND API (FastAPI)                      │
+│                       BACKEND API (FastAPI)                     │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │                    Campaign Router                        │   │
-│  │  POST /campaigns/submit                                   │   │
-│  │  GET  /campaigns/queue                                    │   │
+│  │                    Campaign Router                       │   │
+│  │  POST /campaigns/submit                                  │   │
+│  │  GET  /campaigns/queue                                   │   │
 │  │  POST /campaigns/{id}/review                             │   │
 │  │  GET  /campaigns/{id}/analysis                           │   │
 │  │  GET  /analytics/eval-metrics                            │   │
@@ -49,24 +49,24 @@ An AI agent (built with LangGraph + Google Gemini) automatically analyzes each c
             │
             ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      AI AGENT LAYER (LangGraph)                  │
-│                                                                   │
+│                      AI AGENT LAYER (LangGraph)                 │
+│                                                                 │
 │  ┌─────────────┐   ┌──────────────┐   ┌──────────────────────┐  │
 │  │  Intake     │──►│  Analysis    │──►│  Risk Scoring        │  │
 │  │  Node       │   │  Node        │   │  Node                │  │
 │  └─────────────┘   └──────────────┘   └──────────┬───────────┘  │
-│                                                    │              │
-│                         ┌──────────────────────────┘              │
-│                         ▼                                          │
-│  ┌──────────────────────────────────────────────────────────┐    │
-│  │                  Decision Node                            │    │
-│  │  APPROVE (score < 30) / ESCALATE (30-70) / REJECT (>70)  │    │
-│  └──────────────────────────────────────────────────────────┘    │
+│                                                  │              │
+│                         ┌────────────────────────┘              │
+│                         ▼                                       │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                  Decision Node                           │   │
+│  │  APPROVE (score < 30) / ESCALATE (30-70) / REJECT (>70)  │   │
+│  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
             │
             ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                         DATA LAYER                               │
+│                         DATA LAYER                              │
 │  ┌──────────────┐  ┌────────────────┐  ┌─────────────────────┐  │
 │  │  PostgreSQL  │  │  Vector Store  │  │  Redis (Queue)      │  │
 │  │  (campaigns, │  │  (pgvector)    │  │  (async job queue)  │  │
