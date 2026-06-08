@@ -1,0 +1,46 @@
+# =============================================================================
+# Backend .dockerignore
+# Keep the Docker build context lean — exclude dev artifacts
+# =============================================================================
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tests & dev tools
+tests/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Local secrets (never in image)
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Docs
+*.md
+
+# Seed / dev scripts (not needed in prod)
+seed.py
+test_agent.py
+run_deterministic_evals.py

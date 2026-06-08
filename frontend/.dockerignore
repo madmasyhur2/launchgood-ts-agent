@@ -1,0 +1,33 @@
+# =============================================================================
+# Frontend .dockerignore
+# =============================================================================
+
+# Dependencies (rebuilt inside Docker)
+node_modules/
+
+# Build output (rebuilt inside Docker)
+.next/
+out/
+
+# Local secrets
+.env
+.env.local
+.env.*.local
+
+# Dev tools / IDE
+.vscode/
+.idea/
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Docs
+*.md
+AGENTS.md
+CLAUDE.md
+
+# OS artifacts
+.DS_Store
+Thumbs.db

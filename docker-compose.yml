@@ -1,0 +1,126 @@
+version: "3.9"
+
+# =============================================================================
+# LaunchGood T&S Agent — Full Stack Docker Compose
+# =============================================================================
+# Services:
+#   postgres  — PostgreSQL 16 with pgvector (database)
+#   redis     — Redis 7 (cache + Celery broker)
+#   backend   — FastAPI API server
+#   frontend  — Next.js UI
+#   pgadmin   — Database admin UI (dev only)
+#
+# Usage:
+#   docker compose up -d               # start all services
+#   docker compose up -d postgres redis # infra only (for local dev)
+#   docker compose logs -f backend      # stream backend logs
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Infrastructure
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: launchgood_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-launchgood}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-launchgood_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-launchgood_ts}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-launchgood} -d ${POSTGRES_DB:-launchgood_ts}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: launchgood_redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Backend (FastAPI)
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: launchgood_backend
+    env_file:
+      - ./backend/.env
+    environment:
+      # Override DB/Redis hostnames to point to Docker service names
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-launchgood}:${POSTGRES_PASSWORD:-launchgood_secret}@postgres:5432/${POSTGRES_DB:-launchgood_ts}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      ALLOWED_ORIGINS: http://localhost:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Frontend (Next.js)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    container_name: launchgood_frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # pgAdmin (dev convenience — remove in production)
+  # ---------------------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    profiles:
+      - dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

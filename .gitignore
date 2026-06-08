@@ -1,0 +1,55 @@
+# =============================================================================
+# LaunchGood T&S Agent — Root .gitignore
+# =============================================================================
+
+# ── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.uv/
+.venv/
+venv/
+
+# ── pytest / coverage ─────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+*.xml
+
+# ── Node / Next.js ────────────────────────────────────────────────────────
+node_modules/
+.next/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.turbo/
+*.tsbuildinfo
+
+# ── Secrets (NEVER commit) ────────────────────────────────────────────────
+.env
+*.env.local
+.env.*.local
+backend/.env
+frontend/.env.local
+
+# ── OS & editors ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# ── Logs ─────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Docker volumes (if mapped to local paths) ─────────────────────────────
+postgres_data/
+redis_data/
